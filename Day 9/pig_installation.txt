@@ -1,0 +1,32 @@
+--------------------------------------------------------------------------------------------------------
+PIG INSTALLATION GUIDE
+--------------------------------------------------------------------------------------------------------
+
+#1. Download Pig version 0.17 from pig.apache.org
+
+#2. Extract pig-0.17.0.tar.gz and rename the extracted folder to 'pig'
+
+#3. Move the dir 'pig' to /usr/local
+
+$ sudo mv pig /usr/local
+
+#4. Set the environment variables
+
+$ nano ~/.bashrc
+
+#Add these lines at EOF
+
+export PIG_HOME=/usr/local/pig
+export PATH=$PATH:$PIG_HOME/bin
+export PIG_CLASSPATH=$HADOOP_HOME/conf
+
+#Save and exit
+
+#5. Restart the terminal window and test the installation:
+
+$ pig -version
+
+#The output should be like this:
+
+Apache Pig version 0.17.0 (r1797386) 
+compiled Jun 02 2017, 15:41:58

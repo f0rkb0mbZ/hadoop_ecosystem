@@ -1,0 +1,56 @@
+------------------------------------------------------------------------------------------------------------------------------------
+SQOOP INSTALLATION AND DATA IMPORT TO HDFS
+------------------------------------------------------------------------------------------------------------------------------------
+
+#1. Download sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz from sqoop.apache.org
+
+#2. Extract the file
+
+#3. Rename the extracted folder to 'sqoop'
+
+#4. Move the folder to /usr/lib/
+
+$ sudo mv sqoop /usr/lib
+
+#5. edit ~/.bashrc and add these lines
+
+export SQOOP_HOME=/usr/lib/sqoop
+export PATH=$PATH:$SQOOP_HOME/bin
+
+Save the file and exit
+
+#6. configure sqoop conf files
+
+$ cd $SQOOP_HOME/conf
+$ sudo cp sqoop-env-template.sh sqoop-env.sh
+$ sudo nano sqoop-env.sh
+
+Add these lines at the end:
+
+export HADOOP_COMMON_HOME=/usr/local/hadoop 
+export HADOOP_MAPRED_HOME=/usr/local/hadoop
+
+Save and exit.
+
+#7. Download mysql-connector-java from https://dev.mysql.com/downloads/connector/j/
+
+*Download platform independent *.zip and *.tar.gz file
+
+#8. Extract and move the mysql-connector-java-8.0.11.jar (One from the archive) to /usr/lib/sqoop/lib 
+
+#9. Verify Sqoop installation
+
+$ sqoop-version
+
+Expected output-
+INFO sqoop.Sqoop: Running Sqoop version: 1.x.x
+
+#10. Import data into hdfs using sqoop
+
+$ sqoop import --connect jdbc:mysql://localhost/sample?zeroDateTimeBehavior=CONVERT_TO_NULL --username hduser -P --table studentreport --m 1 --target-dir /<any_non_existant_dir>
+
+**General Syntax: 
+
+$ sqoop import --connect jdbc:mysql://localhost/<db_name>?zeroDateTimeBehavior=CONVERT_TO_NULL --username <username_of_db> --table <table_you_want_to_import> --m 1 --target-dir /<location to hdfs folder>
+
+

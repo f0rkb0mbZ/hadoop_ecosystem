@@ -1,0 +1,125 @@
+-------------------------------------------------------------------------------
+HIVE INSTALLATION AND CONFIGURATION WITH MYSQL METASTORE
+-------------------------------------------------------------------------------
+
+#1. Download Apache Hive from hive.apache.org (Version 2.3.3)
+
+#2. Extract the file and rename the extracted folder to 'hive'
+
+#3. Move the renamed dir 'hive' to /usr/local
+
+$ sudo mv hive /usr/local
+
+#4. Add hive to environment variables
+
+$ nano ~/.bashrc
+
+//add these lines
+
+export HIVE_HOME=/usr/local/hive
+export PATH=$PATH:$HIVE_HOME/bin
+export CLASSPATH=$CLASSPATH:/usr/local/hadoop/lib/*:/usr/local/hive/lib/*:.
+
+#5. Install MySQL
+
+$ sudo apt install mysql-server
+
+#6. Install MySQL java connector
+
+$ sudo apt install libmysql-java
+
+#7. Create soft link for connector in Hive lib dir
+
+$ ln -s /usr/share/java/mysql-connector-java.jar $HIVE_HOME/lib/mysql-connector-java.jar
+
+#8. Create database on mysql for metastore
+
+$ sudo mysql -u root -p
+
+mysql> create database metastore;
+mysql> use metastore;
+mysql> source /usr/local/hive/scripts/metastore/upgrade/mysql/hive-schema-2.3.0.mysql.sql;
+
+#9. After creating the schema a mysql account is needed for hive to access the metastore
+
+mysql> create user 'hiveuser'@'localhost' identified by 'hivepassword';
+mysql> grant all on *.* to 'hiveuser'@'localhost' identified by 'hivepassword';
+mysql> flush privileges;
+
+#10. Create hive-site.xml in $HIVE_HOME/conf and add these lines
+
+$ sudo nano hive-site.xml
+
+<!--start here-->
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+
+
+<property>
+  <name>hive.metastore.warehouse.dir</name>
+  <value>/user/hive/warehouse</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionURL</name>
+  <value>jdbc:mysql://localhost/metastore?useSSL=false</value>
+</property>
+
+
+<property>
+  <name>javax.jdo.option.ConnectionDriverName</name>
+  <value>com.mysql.jdbc.Driver</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionUserName</name>
+  <value>hiveuser</value>
+</property>
+
+<property>
+  <name>javax.jdo.option.ConnectionPassword</name>
+  <value>hivepassword</value>
+</property>
+
+<property>
+  <name>datanucleus.autoCreateSchema</name>
+  <value>true</value>
+</property>
+
+<property>
+  <name>datanucleus.fixedDatastore</name>
+  <value>true</value>
+</property>
+
+<property>
+ <name>datanucleus.autoCreateTables</name>
+ <value>True</value>
+ </property>
+
+</configuration>
+<!--end here-->
+
+#11. Create these folders and change permissions inside hdfs:
+
+$ hdfs dfs -mkdir /tmp
+$ hdfs dfs -mkdir -p /user/hive/warehouse
+$ hdfs dfs -chmod g+w /tmp
+$ hdfs dfs -chmod g+w /user/hive/warehouse
+
+#12. Run hive by simply typing 'hive' on terminal
+
+$ hive
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/usr/local/hive/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/usr/local/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+
+Logging initialized using configuration in jar:file:/usr/local/hive/lib/hive-common-2.3.3.jar!/hive-log4j2.properties Async: true
+Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+hive> create database new;
+OK
+Time taken: 3.742 seconds
+hive> 
+

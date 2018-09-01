@@ -1,0 +1,14 @@
+------------------------------------------------------------------------
+MAPREDUCE PROBLEM II
+------------------------------------------------------------------------
+
+#1. Write a mapreduce program to aggregate the common location under same
+latutide and longitude
+
+#2. Output format should be like this:
+	
+
+	(latitude_1, longitude_1)				(location_name_1, location_name_2, .....)
+	(latitude_2, longitude_2)				(location_name_1, location_name_2, .....)
+	.......									...........
+	

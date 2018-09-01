@@ -1,0 +1,60 @@
+----------------------------------------------------------
+SQOOP PART 1:  INSTALLING AND LOADING DB INTO MYSQL SERVER
+----------------------------------------------------------
+
+#1. Install mysql-server package with apt:
+
+$ sudo apt install mysql-server
+
+#2. Run mysql_secure_installation to configure the installation for 1st time
+
+$ mysql_secure_instllation
+
+#3. Login in mysql 
+
+$ sudo mysql -u root -p
+
+#4. Create another user 'hduser'
+
+mysql> GRANT ALL PRIVILAGES ON *.* TO 'hduser'@'localhost' IDENTIFIED BY '<password>';
+
+#5. Exit the mysql shell by 'exit' and login using the 'hduser' account
+
+mysql> exit
+
+$ mysql -u hduser -p
+$ Password: ************
+mysql>
+
+#6. Create a database with name 'sample'
+
+$ create database sample;
+
+#7. Change database
+
+$ use sample;
+
+#8. Import sql file into the db
+
+$ source <path_to>/sample.sql;
+
+#9. Check the import
+
+$ show tables;
+
++------------------+
+| Tables_in_sample |
++------------------+
+| agents           |
+| company          |
+| customer         |
+| daysorder        |
+| despatch         |
+| foods            |
+| listofitem       |
+| orders           |
+| student          |
+| studentreport    |
++------------------+
+
+* If the last command returns this then the installation and import is successful.

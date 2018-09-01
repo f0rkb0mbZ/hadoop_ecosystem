@@ -1,0 +1,10 @@
+--------------------------------------------------------------------------------------------------------------------------
+MAPREDUCE PROBLEM STATEMENT 1
+--------------------------------------------------------------------------------------------------------------------------
+
+#1. A list of multiple email addresses is provided in this folder.
+#2. The format of the data is like this:
+					
+user1@domain1.com+"\n"+user2@domain2.com+"\n"+user3@domain3.com+"\n"+........................
+
+#3. You have to count the number of hotmail, yahoo and gmail users from this data.

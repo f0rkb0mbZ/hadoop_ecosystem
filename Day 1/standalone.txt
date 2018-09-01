@@ -1,0 +1,44 @@
+Prerequisite:
+
+openssh-server
+openjdk-8-jdk
+
+#1. Install prerequisites using apt
+
+$ sudo apt install openssh-server openjdk-8-jdk
+
+#2. Download hadoop 2.7.6 from hadoop.apache.org
+
+#3. Extract the file hadoop-2.7.6.tar.gz and rename the extracted folder from hadoop-2.7.6 to hadoop
+
+#4. Open terminal by right clicking in the window and move the directory to /usr/local/
+
+$ sudo mv hadoop /usr/local/
+
+#5. Set environment variables for hadoop in ~/.bashrc
+
+$ nano ~/.bashrc
+
+//add the following lines at the end of the file .bashrc
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export HADOOP_HOME=/usr/local/hadoop
+export PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
+
+//save the file and exit
+
+#6. Close the current terminal and open again and test
+
+$ hadoop version
+
+//this command should output like below if everything is alright.
+
+Hadoop 2.7.6
+Subversion https://shv@git-wip-us.apache.org/repos/asf/hadoop.git -r 085099c66cf28be31604560c376fa282e69282b8
+Compiled by kshvachk on 2018-04-18T01:33Z
+Compiled with protoc 2.5.0
+From source with checksum 71e2695531cb3360ab74598755d036
+This command was run using /usr/local/hadoop/share/hadoop/common/hadoop-common-2.7.6.jar
+
+
+

@@ -1,0 +1,37 @@
+--------------------------------------------------------------------------------------------------------------
+APACHE FLUME INSTALLATION - PART 1 (This tutorial assumes that there is a pre-configured pseudo-distributed hadoop distribution is already there)
+--------------------------------------------------------------------------------------------------------------
+
+#1. Download Apache Flume from https://flume.apache.org/
+
+#2. Extract apache-flume-1.8.0-bin.tar.gz and rename the extracted folder to 'flume'
+
+#3. Move the folder to /usr/local
+
+#4. Edit ~/.bashrc and add these environment variables
+
+export FLUME_HOME=/usr/local/flume
+export PATH=$PATH:$FLUME_HOME/bin
+export CLASSPATH=$CLASSPATH:$FLUME_HOME/lib/*
+
+#5. Open the $FLUME_HOME/conf folder and make a copy of each flume-conf.properties.template and flume-env.sh.template to flume-conf.properties and flume-env.sh respectively
+
+$ sudo cp flume-conf.properties.template flume-conf.properties
+$ sudo cp flume-env.sh.template flume-env.sh
+
+#6. Edit flume-env.sh and set the JAVA_HOME variable
+
+$ sudo nano flume-env.sh
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+FLUME_CLASSPATH="/usr/local/flume/lib/*"
+
+Add these lines ^ then save and exit.
+
+#7. Verify installation
+
+Restart any terminal window and run flume-ng
+
+$ flume-ng
+
+*If config is successful you will see a help list of flume

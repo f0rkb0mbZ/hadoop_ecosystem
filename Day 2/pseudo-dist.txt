@@ -1,0 +1,128 @@
+--------------------------------------------------------------------------------------------------
+PSEUDO-DISTRIBUTED MODE CONFIGURATION (Assuming there is a standalone hadoop installation already)
+--------------------------------------------------------------------------------------------------
+
+#1. Create a usergroup, user and add the user to sudoers group (Give new password when asked and remember, ** this is your password to access the user account)
+
+$ sudo addgroup hadoop
+$ sudo adduser -ingroup hadoop hduser
+$ sudo adduser hduser sudo
+
+#2. Configure SSH for hdfs connection (openssh-server package must be installed, use 'sudo apt install openssh-server)
+
+$ ssh-keygen -t rsa -P ""
+$ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+//check the connection
+
+$ ssh localhost
+
+#3. Logout from the current user account and login in the hduser:hadoop account
+
+#4. Set the following environment variables in ~/.bashrc
+
+$ nano ~/.bashrc
+
+//add these line at EOF
+
+export HADOOP_HOME=/usr/local/hadoop 
+export HADOOP_MAPRED_HOME=$HADOOP_HOME 
+export HADOOP_COMMON_HOME=$HADOOP_HOME 
+export HADOOP_HDFS_HOME=$HADOOP_HOME 
+export YARN_HOME=$HADOOP_HOME 
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native 
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin 
+export HADOOP_INSTALL=$HADOOP_HOME
+
+//*****ignore the lines that are already added
+
+//change owner of the hadoop installation
+$ sudo chown -R hduser:hadoop /usr/local/hadoop/
+
+#5. Go to $HADOOP_HOME/etc/hadoop and edit core-site.xml
+
+hduser@hostname:/usr/local/hadoop/etc/hadoop$ sudo nano core-site.xml
+//add these lines inside the <configuration></configuration> tag
+
+<property>
+      <name>fs.default.name</name>
+      <value>hdfs://localhost:9000</value> 
+</property>
+<property>
+        <name>hadoop.tmp.dir</name>
+        <value>$HADOOP_HOME/tmp</value>
+</property>
+
+//save and exit
+#6. Create directory for hdfs data storage and change owner to hduser:hadoop
+
+$ sudo mkdir -p /app/hadoop/tmp/dfs/name
+$ sudo mkdir -p /app/hadoop/tmp/dfs/data
+$ sudo chown -R hduser:hadoop /app/hadoop/tmp
+
+#7. Edit hdfs-site.xml and add following lines
+
+hduser@hostname:/usr/local/hadoop/etc/hadoop$ nano hdfs-site.xml
+
+//add these lines inside the <configuration></configuration> tag
+   <property>
+      <name>dfs.replication</name>
+      <value>1</value>
+   </property>
+
+   <property>
+      <name>dfs.name.dir</name>
+      <value>/app/hadoop/tmp/dfs/name </value>
+   </property>
+
+   <property>
+      <name>dfs.data.dir</name>
+      <value>/app/hadoop/tmp/dfs/data </value>
+   </property>
+
+#8. Edit yarn-site.xml and add following lines
+
+hduser@hostname:/usr/local/hadoop/etc/hadoop$ nano yarn-site.xml
+
+//add these lines inside the <configuration></configuration> tag
+
+<property>
+      <name>yarn.nodemanager.aux-services</name>
+      <value>mapreduce_shuffle</value> 
+</property>
+
+#9. Copy mapred-site.xml.template to mapred-site.xml
+
+hduser@hostname:/usr/local/hadoop/etc/hadoop$ cp mapred-site.xml.template mapred-site.xml
+
+//add these lines inside the <configuration></configuration> tag of mapred-site.xml
+
+<property> 
+      <name>mapreduce.framework.name</name>
+      <value>yarn</value>
+</property>
+
+#10. Verify hadoop installation
+
+$ cd ~
+$ hdfs namenode -format
+
+//"localhost: Error: JAVA_HOME is not set and could not be found." to avoid this error  we have to edit another file.
+
+***Edit hadoop-env.sh at $HADOOP_HOME/etc/hadoop/
+
+//edit the JAVA_HOME variable to the real java path and test again
+
+// to start all hadoop daemons run start-all.sh from $HADOOP_HOME/sbin
+
+$ start-all.sh (*the password is the same one created at the beginning)
+
+//Run 'jps' to verify if all daemons are running
+
+6115 DataNode
+6821 NodeManager
+5957 NameNode
+6502 ResourceManager
+6318 SecondaryNameNode
+
+//these processes must be running for a proper hadoop operation

@@ -1,0 +1,76 @@
+--------------------------------------------------------------------------------------------------------------
+FLUME PART 2 - TWITTER DATA IMPORT
+--------------------------------------------------------------------------------------------------------------
+
+#1. Open https://apps.twitter.com and click on create new app
+
+#2. Fill up the details:
+
+Name* - whatever application name you want
+
+Description* - Detailed description of your app
+
+Website* - The name of your website where you want to use your app. (for students you can give niit's website too https://www.csksrc.org)
+
+Callback URLs - not required
+
+Fill the details and Agree the twitter developer agreement and create your twitter developer agreement.
+
+#3. After Creation of the app under 'keys and access tokens' tab at the bottom of the page, there is button named 'Create my access token'. Click it to generate the access token
+
+#4. Click test outh button to ensure that oauth works.
+
+Note/copy these things from the page:
+
+i) Consumer key
+ii) Consumer secret
+iii) Access token
+iv)Access token secret
+
+#5. Create a directory for tweet import in hdfs
+
+$ hdfs dfs -mkdir /user/hduser/<any_foldername_you_want>
+
+
+#6. Go to the $FLUME_HOME/conf and create a file 'twitter.conf'
+
+*Add these lines to the file
+<!--start from here dont copy this>
+# Naming the components on the current agent. 
+TwitterAgent.sources = Twitter 
+TwitterAgent.channels = MemChannel 
+TwitterAgent.sinks = HDFS
+  
+# Describing/Configuring the source 
+TwitterAgent.sources.Twitter.type = org.apache.flume.source.twitter.TwitterSource
+TwitterAgent.sources.Twitter.consumerKey = Your OAuth consumer key
+TwitterAgent.sources.Twitter.consumerSecret = Your OAuth consumer secret 
+TwitterAgent.sources.Twitter.accessToken = Your OAuth consumer key access token 
+TwitterAgent.sources.Twitter.accessTokenSecret = Your OAuth consumer key access token secret 
+TwitterAgent.sources.Twitter.keywords = tutorials point,java, bigdata, mapreduce, mahout, hbase, nosql
+  
+# Describing/Configuring the sink 
+
+TwitterAgent.sinks.HDFS.type = hdfs 
+TwitterAgent.sinks.HDFS.hdfs.path = hdfs://localhost:9000/<location_of_hdfs_where_you_want_to_sink>
+TwitterAgent.sinks.HDFS.hdfs.fileType = DataStream 
+TwitterAgent.sinks.HDFS.hdfs.writeFormat = Text 
+TwitterAgent.sinks.HDFS.hdfs.batchSize = 1000
+TwitterAgent.sinks.HDFS.hdfs.rollSize = 0 
+TwitterAgent.sinks.HDFS.hdfs.rollCount = 10000 
+ 
+# Describing/Configuring the channel
+TwitterAgent.channels.MemChannel.type = memory 
+TwitterAgent.channels.MemChannel.capacity = 10000 
+TwitterAgent.channels.MemChannel.transactionCapacity = 1000
+  
+# Binding the source and sink to the channel 
+TwitterAgent.sources.Twitter.channels = MemChannel
+TwitterAgent.sinks.HDFS.channel = MemChannel
+<!--end here dont copy this>
+
+#7. Run the twitter import job by this command
+
+flume-ng agent -c /usr/local/flume/conf -f /usr/local/flume/conf/twitter.conf -n TwitterAgent -Dflume.root.logger=INFO,console
+
+#8. Check the files using hdfs web ui (localhost:50070) or the command line in the folder created.
